@@ -1,0 +1,291 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Quiz App - Create Quiz</title>
+  <style>
+    /* 🌌 Galaxy Purple Theme */
+    :root {
+      --bg: linear-gradient(145deg, #654ea3, #eaafc8);
+      --card: #ffffff22;
+      --accent: #8e2de2;
+      --muted: #d1c4e9;
+      --danger: #ef4444;
+      --success: #22c55e;
+      --text: #fff;
+    }
+
+    html, body {
+      height: 100%;
+      margin: 0;
+      font-family: 'Segoe UI', Roboto, Inter, Arial, sans-serif;
+      background: var(--bg);
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* 🔝 Navbar */
+    .navbar {
+      background: rgba(0,0,0,0.3);
+      backdrop-filter: blur(10px);
+      padding: 14px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    }
+    .nav-links {
+      display: flex;
+      gap: 20px;
+    }
+    .nav-links a {
+      color: #fff;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .nav-links a:hover {
+      text-decoration: underline;
+    }
+
+    /* 📦 Container */
+    .container {
+      flex: 1;
+      padding: 30px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* 🃏 Card */
+    .card {
+      background: var(--card);
+      backdrop-filter: blur(12px);
+      padding: 20px;
+      border-radius: 18px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.4);
+      color: #fff;
+      margin-bottom: 15px;
+    }
+    .card h2 {
+      margin: 0 0 12px;
+      font-size: 20px;
+    }
+    .card p {
+      font-size: 14px;
+      color: #eee;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px;
+      margin: 6px 0 12px;
+      border-radius: 8px;
+      border: none;
+      outline: none;
+      background: rgba(255,255,255,0.1);
+      color: #0b0a0a;
+      font-weight: 600;
+    }
+
+    button {
+      padding: 10px 16px;
+      border-radius: 12px;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      background: linear-gradient(135deg,#8e2de2,#c084fc);
+      color: #fff;
+      margin-top: 5px;
+    }
+    button:hover {
+      background: linear-gradient(135deg,#c084fc,#8e2de2);
+    }
+
+    .toggle {
+      cursor: pointer;
+      font-size: 14px;
+      padding: 6px 12px;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.15);
+    }
+
+    .optionField {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+    .removeBtn {
+      background: #ef4444;
+      padding: 6px 10px;
+      border-radius: 8px;
+    }
+    .removeBtn:hover {
+      background: #dc2626;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 🔝 Navbar -->
+  <header class="navbar">
+    <div class="logo"><strong>Quiz App</strong></div>
+    <nav class="nav-links">
+      <a href="home.html">🏠 Home</a>
+      <a href="create.html">📝 Create</a>
+      <a href="take-quiz.html">▶ Take Quiz</a>
+      <a href="results.html">📊 Results</a>
+      <a href="leaderboard.html">🏆 Leaderboard</a>
+      <a href="profile.html">👤 Profile</a>
+      <a href="#" id="logoutBtn">🚪 Logout</a>
+      <span class="toggle" id="themeToggle">🌙 Dark Mode</span>
+    </nav>
+  </header>
+
+  <!-- 📦 Create Quiz Form -->
+  <main class="container">
+    <div class="card">
+      <h2>Create a New Quiz 📝</h2>
+      
+      <label>Quiz Title</label>
+      <input type="text" id="quizTitle" placeholder="Enter quiz title" required />
+
+      <label>Category</label>
+      <select id="quizCategory">
+        <option value="Math">Math</option>
+        <option value="Science">Science</option>
+        <option value="Programming">Programming</option>
+        <option value="General Knowledge">General Knowledge</option>
+      </select>
+
+      <h3>Questions</h3>
+      <div id="questionsContainer"></div>
+      <button type="button" id="addQuestionBtn">➕ Add Question</button>
+      
+      <br><br>
+      <button id="saveQuizBtn">💾 Save Quiz & Generate Link</button>
+    </div>
+
+    <div class="card" id="quizLinkCard" style="display:none;">
+      <h2>Shareable Link 🔗</h2>
+      <input type="text" id="shareLink" readonly />
+    </div>
+  </main>
+
+  <script>
+    // ✅ Ensure user is logged in
+    const loggedInEmail = localStorage.getItem('quiz_logged_in');
+    if(!loggedInEmail){
+      alert('Please login first!');
+      window.location.href = 'index.html';
+    }
+
+    // ✅ Logout
+    document.getElementById('logoutBtn').addEventListener('click', e=>{
+      e.preventDefault();
+      localStorage.removeItem('quiz_logged_in');
+      window.location.href = 'index.html';
+    });
+
+    // ✅ Theme Toggle
+    const themeToggle = document.getElementById('themeToggle');
+    let darkMode = true;
+    themeToggle.addEventListener('click', () => {
+      darkMode = !darkMode;
+      document.body.style.background = darkMode
+        ? "linear-gradient(145deg, #654ea3, #eaafc8)"
+        : "linear-gradient(145deg, #fbc2eb, #a6c1ee)";
+      themeToggle.textContent = darkMode ? "🌙 Dark Mode" : "☀ Light Mode";
+    });
+
+    // ✅ Add Question
+    const questionsContainer = document.getElementById('questionsContainer');
+    document.getElementById('addQuestionBtn').addEventListener('click', () => {
+      const qIndex = questionsContainer.children.length + 1;
+      const questionDiv = document.createElement('div');
+      questionDiv.classList.add('card');
+      questionDiv.innerHTML = `
+        <label>Question ${qIndex}</label>
+        <input type="text" class="questionText" placeholder="Enter question text" required />
+
+        <div class="optionsWrapper">
+          <div class="optionField">
+            <input type="text" class="option" placeholder="Option 1" required />
+            <button type="button" class="removeBtn">✖</button>
+          </div>
+          <div class="optionField">
+            <input type="text" class="option" placeholder="Option 2" required />
+            <button type="button" class="removeBtn">✖</button>
+          </div>
+        </div>
+        <button type="button" class="addOptionBtn">➕ Add Option</button>
+
+        <label>Correct Answer (index)</label>
+        <input type="number" class="answerIndex" min="1" value="1" required />
+      `;
+
+      // option remove logic
+      questionDiv.querySelectorAll('.removeBtn').forEach(btn => {
+        btn.addEventListener('click', () => btn.parentElement.remove());
+      });
+
+      // add option logic
+      questionDiv.querySelector('.addOptionBtn').addEventListener('click', () => {
+        const optCount = questionDiv.querySelectorAll('.option').length + 1;
+        const optDiv = document.createElement('div');
+        optDiv.classList.add('optionField');
+        optDiv.innerHTML = `
+          <input type="text" class="option" placeholder="Option ${optCount}" required />
+          <button type="button" class="removeBtn">✖</button>
+        `;
+        optDiv.querySelector('.removeBtn').addEventListener('click', () => optDiv.remove());
+        questionDiv.querySelector('.optionsWrapper').appendChild(optDiv);
+      });
+
+      questionsContainer.appendChild(questionDiv);
+    });
+
+    // ✅ Save Quiz
+    document.getElementById('saveQuizBtn').addEventListener('click', () => {
+      const title = document.getElementById('quizTitle').value.trim();
+      const category = document.getElementById('quizCategory').value;
+      const questionDivs = questionsContainer.querySelectorAll('.card');
+
+      if (!title || questionDivs.length === 0) {
+        alert("Please enter a title and add at least one question!");
+        return;
+      }
+
+      let questions = [];
+      let valid = true;
+      questionDivs.forEach(div => {
+        const qText = div.querySelector('.questionText').value.trim();
+        const options = [...div.querySelectorAll('.option')].map(opt => opt.value.trim()).filter(o => o);
+        const answerIndex = parseInt(div.querySelector('.answerIndex').value) - 1;
+
+        if (!qText || options.length < 2 || isNaN(answerIndex) || answerIndex >= options.length) {
+          valid = false;
+          return;
+        }
+
+        questions.push({ question: qText, options, answer: answerIndex });
+      });
+
+      if (!valid) {
+        alert("Please complete all fields correctly. Each question needs at least 2 options.");
+        return;
+      }
+
+      const quizzes = JSON.parse(localStorage.getItem('created_quizzes') || '[]');
+      const id = Date.now();
+      quizzes.push({ id, title, category, questions });
+      localStorage.setItem('created_quizzes', JSON.stringify(quizzes));
+
+      const shareLink = `${window.location.origin}/take-quiz.html?id=${id}`;
+      document.getElementById('shareLink').value = shareLink;
+      document.getElementById('quizLinkCard').style.display = 'block';
+    });
+  </script>
+</body>
+</html>
