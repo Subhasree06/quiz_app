@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Quiz App - Home</title>
+  <style>
+    /* 🌌 Galaxy Purple Theme */
+    :root {
+      --bg: linear-gradient(145deg, #654ea3, #eaafc8);
+      --card: #ffffff22;
+      --accent: #8e2de2;
+      --muted: #d1c4e9;
+      --danger: #ef4444;
+      --success: #22c55e;
+      --text: #fff;
+    }
+    html, body {
+      height: 100%;
+      margin: 0;
+      font-family: 'Segoe UI', Roboto, Inter, Arial, sans-serif;
+      background: var(--bg);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    .navbar {
+      background: rgba(0,0,0,0.3);
+      backdrop-filter: blur(10px);
+      padding: 14px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    }
+    .nav-links {
+      display: flex;
+      gap: 20px;
+    }
+    .nav-links a {
+      color: #fff;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .nav-links a:hover {
+      text-decoration: underline;
+    }
+    .container {
+      flex: 1;
+      padding: 30px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+    }
+    .card {
+      background: var(--card);
+      backdrop-filter: blur(12px);
+      padding: 20px;
+      border-radius: 18px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.4);
+      color: #fff;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 28px rgba(0,0,0,0.6);
+    }
+    .card h2 {
+      margin: 0 0 12px;
+      font-size: 20px;
+    }
+    .card p {
+      font-size: 14px;
+      color: #eee;
+    }
+    .btn {
+      display: inline-block;
+      margin-top: 12px;
+      padding: 10px 16px;
+      border: none;
+      border-radius: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      background: linear-gradient(135deg, #8e2de2, #4a00e0);
+      color: #fff;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.4);
+    }
+    .leaderboard ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .leaderboard li {
+      background: rgba(255,255,255,0.1);
+      padding: 8px 12px;
+      border-radius: 8px;
+      margin-bottom: 8px;
+    }
+    .toggle {
+      cursor: pointer;
+      font-size: 14px;
+      padding: 6px 12px;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.15);
+    }
+    .streak {
+      margin-top:10px;
+      font-size:16px;
+      font-weight:600;
+      color: #facc15;
+    }
+    .category-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 20px 30px 10px;
+    }
+    .category-container label {
+      font-weight: bold;
+      color: #fff;
+    }
+    #quizList {
+      margin: 15px 30px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    #quizList button {
+      padding: 12px 16px;
+      border-radius: 14px;
+      border: none;
+      background: rgba(255,255,255,0.08);
+      color: #fff;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      backdrop-filter: blur(10px);
+      box-shadow: inset 2px 2px 8px rgba(0,0,0,0.3), inset -2px -2px 8px rgba(255,255,255,0.05);
+    }
+    #quizList button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.5), inset 2px 2px 8px rgba(0,0,0,0.3), inset -2px -2px 8px rgba(255,255,255,0.05);
+      background: linear-gradient(135deg, #8e2de2, #c084fc);
+      color: #fff;
+    }
+    .bottom-section {
+      margin: 0 30px 30px;
+    }
+  </style>
+</head>
+<body>
+  <header class="navbar">
+    <div class="logo"><strong>Quiz App</strong></div>
+    <nav class="nav-links">
+      <a href="home.html">🏠 Home</a>
+      <a href="create.html">📝 Create</a>
+      <a href="take-quiz.html">▶ Take Quiz</a>
+      <a href="results.html">📊 Results</a>
+      <a href="leaderboard.html">🏆 Leaderboard</a>
+      <a href="profile.html">👤 Profile</a>
+      <a href="#" id="logoutBtn">🚪 Logout</a>
+      <span class="toggle" id="themeToggle">🌙 Dark Mode</span>
+    </nav>
+  </header>
+
+  <main class="container">
+    <!-- Welcome -->
+    <div class="card">
+      <h2>Welcome back, <span id="username">User</span> 🎉</h2>
+      <p>Ready to test your skills today?</p>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="card">
+      <h2>Quick Actions</h2>
+      <button class="btn" onclick="startNewQuiz()">✅ Start New Quiz</button>
+      <button class="btn" onclick="viewPastScores()">📊 View Past Scores</button>
+      <button class="btn" onclick="editProfile()">👤 Edit Profile</button>
+      <button class="btn" onclick="goLeaderboard()">🏆 Leaderboard</button>
+      <button class="btn" onclick="createQuiz()">📝 Create Quiz</button>
+    </div>
+
+    <!-- Leaderboard -->
+    <div class="card leaderboard">
+      <h2>Top Players 🏆</h2>
+      <ul id="leaderboardList"></ul>
+    </div>
+  </main>
+
+  <!-- ✅ Quiz List Section -->
+  <section class="bottom-section">
+    <div class="category-container">
+      <label for="categorySelect">Select Category:</label>
+      <select id="categorySelect">
+        <option value="">All</option>
+        <option value="science">Science</option>
+        <option value="math">Math</option>
+        <option value="history">History</option>
+        <option value="programming">Programming</option>
+        <option value="general">General</option>
+      </select>
+    </div>
+
+    <div id="quizList"></div>
+    <div class="streak" id="streakDisplay">🔥 Daily Quiz Streak: 0</div>
+  </section>
+
+  <script>
+    // ✅ Check login
+    const loggedInEmail = localStorage.getItem('quiz_logged_in');
+    if (!loggedInEmail) {
+      alert('Please login first!');
+      window.location.href = 'index.html';
+    }
+
+    // ✅ Show username
+    const users = JSON.parse(localStorage.getItem('quiz_users') || '[]');
+    const currentUser = users[users.length - 1];
+    if (currentUser) document.getElementById('username').textContent = currentUser.name;
+
+    // ✅ Logout
+    const logoutBtn = document.getElementById('logoutBtn');
+    logoutBtn.addEventListener('click', e => {
+      e.preventDefault();
+      localStorage.removeItem('quiz_logged_in');
+      alert('Logged out successfully!');
+      window.location.href = 'index.html';
+    });
+
+    // ✅ Theme toggle
+    const themeToggle = document.getElementById('themeToggle');
+    let darkMode = true;
+    themeToggle.addEventListener('click', () => {
+      darkMode = !darkMode;
+      if (darkMode) {
+        document.body.style.background = "linear-gradient(145deg, #654ea3, #eaafc8)";
+        themeToggle.textContent = "🌙 Dark Mode";
+      } else {
+        document.body.style.background = "linear-gradient(145deg, #fbc2eb, #a6c1ee)";
+        themeToggle.textContent = "☀ Light Mode";
+      }
+    });
+
+    // ✅ Update streak
+    const today = new Date().toLocaleDateString();
+    let streakData = JSON.parse(localStorage.getItem('quiz_streak') || '{}');
+    if (streakData.lastDate !== today) {
+      const yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+      if (streakData.lastDate === yesterday.toLocaleDateString()) {
+        streakData.streak = (streakData.streak || 0) + 1;
+      } else {
+        streakData.streak = 1;
+      }
+      streakData.lastDate = today;
+      localStorage.setItem('quiz_streak', JSON.stringify(streakData));
+    }
+    document.getElementById('streakDisplay').textContent =
+      `🔥 Daily Quiz Streak: ${streakData.streak || 0}`;
+
+    // ✅ Show quizzes
+    const categorySelect = document.getElementById('categorySelect');
+    const quizList = document.getElementById('quizList');
+
+    function showQuizzes(category) {
+      const quizzes = JSON.parse(localStorage.getItem('created_quizzes') || '[]');
+
+      // Don't remove quizzes – keep them always available
+      let filtered = category ? quizzes.filter(q => q.category === category) : quizzes;
+
+      quizList.innerHTML = "";
+      filtered.forEach(q => {
+        const btn = document.createElement('button');
+        btn.textContent = `▶ ${q.title} (${q.category})`;
+        btn.addEventListener('click', () => window.location.href = `take-quiz.html?id=${q.id}`);
+        quizList.appendChild(btn);
+      });
+    }
+    showQuizzes("");
+    categorySelect.addEventListener('change', e => showQuizzes(e.target.value));
+
+    // ✅ Dynamic Leaderboard
+    const leaderboardList = document.getElementById('leaderboardList');
+    const scores = JSON.parse(localStorage.getItem('quiz_scores') || '[]');
+    scores.sort((a, b) => b.score - a.score);
+    const topScores = scores.slice(0, 5);
+    topScores.forEach((entry, idx) => {
+      const li = document.createElement('li');
+      li.textContent = `${idx + 1}. ${entry.name} – ${entry.score} pts`;
+      leaderboardList.appendChild(li);
+    });
+
+    // ✅ Quick Actions
+    function startNewQuiz() { alert('Select a quiz from below!'); }
+    function viewPastScores() { window.location.href = 'results.html'; }
+    function editProfile() { window.location.href = 'profile.html'; }
+    function goLeaderboard() { window.location.href = 'leaderboard.html'; }
+    function createQuiz() { window.location.href = 'create.html'; }
+  </script>
+</body>
+</html>

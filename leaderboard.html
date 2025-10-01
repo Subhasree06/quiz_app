@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Quiz App - Leaderboard</title>
+<style>
+  /* 🌌 Galaxy Purple Theme */
+  :root {
+    --bg: linear-gradient(145deg, #654ea3, #eaafc8);
+    --card: #ffffff22;
+    --accent: #8e2de2;
+    --text: #fff;
+  }
+
+  html, body {
+    height: 100%;
+    margin: 0;
+    font-family: 'Segoe UI', Roboto, Inter, Arial, sans-serif;
+    background: var(--bg);
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* 🔝 Navbar */
+  .navbar {
+    background: rgba(0,0,0,0.3);
+    backdrop-filter: blur(10px);
+    padding: 14px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+  }
+  .nav-links {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .nav-links a {
+    color: #fff;
+    text-decoration: none;
+    font-weight: 600;
+  }
+  .nav-links a:hover { text-decoration: underline; }
+
+  /* 📦 Container */
+  .container {
+    flex: 1;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  /* 🃏 Card */
+  .card {
+    background: var(--card);
+    backdrop-filter: blur(12px);
+    padding: 20px;
+    border-radius: 18px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.4);
+    color: #fff;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 28px rgba(0,0,0,0.6);
+  }
+  .card h2 {
+    margin: 0 0 12px;
+    font-size: 20px;
+  }
+
+  /* 🏆 Leaderboard List */
+  .leaderboard ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .leaderboard li {
+    background: rgba(255,255,255,0.1);
+    padding: 12px 16px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    font-weight: 600;
+  }
+
+  /* 🌙 Theme Toggle */
+  .toggle {
+    cursor: pointer;
+    font-size: 14px;
+    padding: 6px 12px;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.15);
+  }
+</style>
+</head>
+<body>
+  <!-- 🔝 Navbar -->
+  <header class="navbar">
+    <div class="logo"><strong>Quiz App</strong></div>
+    <nav class="nav-links">
+      <a href="home.html">🏠 Home</a>
+      <a href="create.html">📝 Create</a>
+      <a href="take-quiz.html">▶ Take Quiz</a>
+      <a href="results.html">📊 Results</a>
+      <a href="leaderboard.html">🏆 Leaderboard</a>
+      <a href="profile.html">👤 Profile</a>
+      <a href="#" id="logoutBtn">🚪 Logout</a>
+      <span class="toggle" id="themeToggle">🌙 Dark Mode</span>
+    </nav>
+  </header>
+
+  <main class="container">
+    <div class="card leaderboard">
+      <h2>🏆 Leaderboard</h2>
+      <div id="leaderboardContainer">
+        <!-- Quiz-wise leaderboards will appear here -->
+      </div>
+    </div>
+  </main>
+
+<script>
+  // ✅ Check login
+  const loggedInEmail = localStorage.getItem('quiz_logged_in');
+  if(!loggedInEmail){
+    alert('Please login first!');
+    window.location.href = 'index.html';
+  }
+
+  // ✅ Logout
+  document.getElementById('logoutBtn').addEventListener('click', e=>{
+    e.preventDefault();
+    localStorage.removeItem('quiz_logged_in');
+    alert('Logged out successfully!');
+    window.location.href = 'index.html';
+  });
+
+  // ✅ Theme Toggle
+  const themeToggle = document.getElementById('themeToggle');
+  let darkMode = true;
+  themeToggle.addEventListener('click', () => {
+    darkMode = !darkMode;
+    if(darkMode){
+      document.body.style.background = "linear-gradient(145deg, #654ea3, #eaafc8)";
+      themeToggle.textContent = "🌙 Dark Mode";
+    } else {
+      document.body.style.background = "linear-gradient(145deg, #fbc2eb, #a6c1ee)";
+      themeToggle.textContent = "☀ Light Mode";
+    }
+  });
+
+  // ✅ Load Leaderboard from quiz_results
+  const leaderboardContainer = document.getElementById('leaderboardContainer');
+  const results = JSON.parse(localStorage.getItem('quiz_results') || '[]');
+
+  if(results.length === 0){
+    leaderboardContainer.innerHTML = "<p>No quiz results yet!</p>";
+  } else {
+    // Group results by quiz title
+    const grouped = {};
+    results.forEach(r=>{
+      if(!grouped[r.quizTitle]) grouped[r.quizTitle] = [];
+      grouped[r.quizTitle].push(r);
+    });
+
+    // Build leaderboard cards
+    Object.keys(grouped).forEach(title=>{
+      const card = document.createElement('div');
+      card.classList.add('card');
+      card.innerHTML = `<h2>${title}</h2><ul></ul>`;
+      const ul = card.querySelector("ul");
+
+      // Sort scores high to low
+      grouped[title].sort((a,b)=> b.score - a.score);
+
+      grouped[title].forEach((r,i)=>{
+        const li = document.createElement("li");
+        li.innerHTML = `${i+1}. ${r.name || r.email} 
+          <span>${r.score}/${r.total} - <small>${r.date}</small></span>`;
+        ul.appendChild(li);
+      });
+
+      leaderboardContainer.appendChild(card);
+    });
+  }
+</script>
+</body>
+</html>
